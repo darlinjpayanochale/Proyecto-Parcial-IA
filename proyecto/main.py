@@ -6,6 +6,7 @@ import sys
 from scripts.map import GameMap
 from scripts.settings import *
 from scripts.player import Player
+from scripts.treasure import Treasure
 
 
 def main():
@@ -17,6 +18,7 @@ def main():
     pygame.display.set_caption("El Guardián del Tesoro")
     game_map = GameMap()
     player = Player(game_map)
+    treasure = Treasure(game_map, player)
 
     clock = pygame.time.Clock()
     running = True
@@ -27,6 +29,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                
+            if treasure.check_collision():
+                    print("¡Tesoro encontrado!")        
 
             # Permitir salir con ESC
             if event.type == pygame.KEYDOWN:
@@ -37,6 +42,7 @@ def main():
 
         # Fondo negro
         game_map.draw(screen)
+        treasure.draw(screen)
         player.draw(screen)
         pygame.display.flip()
 

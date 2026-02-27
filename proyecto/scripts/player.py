@@ -17,6 +17,13 @@ class Player:
 
         self.color = COLOR_PLAYER
 
+        self.rect = pygame.Rect(
+            self.col * TILE_SIZE,
+            self.row * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+        )
+
     def handle_input(self):
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
@@ -39,20 +46,18 @@ class Player:
         else:
             return  # No se presionó nada
 
-        # Verificar colisión
+        #Verificar colisión
         if self.game_map.grid[new_row][new_col] == 0:
             self.row = new_row
             self.col = new_col
+
+            #Actualizar rect
+            self.rect.x = self.col * TILE_SIZE
+            self.rect.y = self.row * TILE_SIZE
+
             self.last_move_time = current_time
 
     def draw(self, screen):
-        rect = pygame.Rect(
-        self.col * TILE_SIZE,
-        self.row * TILE_SIZE,
-        TILE_SIZE,
-        TILE_SIZE
-    )
-
-        pygame.draw.rect(screen, self.color, rect)
+        pygame.draw.rect(screen, self.color, self.rect)
 
         
