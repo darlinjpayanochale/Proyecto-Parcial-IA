@@ -3,6 +3,8 @@
 
 import pygame
 import sys
+from scripts.map import GameMap
+from scripts.settings import *
 
 
 def main():
@@ -12,6 +14,7 @@ def main():
     # Configurar pantalla completa
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.set_caption("El Guardián del Tesoro")
+    game_map = GameMap()
 
     clock = pygame.time.Clock()
     running = True
@@ -29,8 +32,7 @@ def main():
                     running = False
 
         # Fondo negro
-        screen.fill((0, 0, 0))
-
+        game_map.draw(screen)
         pygame.display.flip()
 
     pygame.quit()
