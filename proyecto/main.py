@@ -5,6 +5,7 @@ import pygame
 import sys
 from scripts.map import GameMap
 from scripts.settings import *
+from scripts.player import Player
 
 
 def main():
@@ -15,6 +16,7 @@ def main():
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.set_caption("El Guardián del Tesoro")
     game_map = GameMap()
+    player = Player(game_map)
 
     clock = pygame.time.Clock()
     running = True
@@ -31,8 +33,11 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
+        player.handle_input()
+
         # Fondo negro
         game_map.draw(screen)
+        player.draw(screen)
         pygame.display.flip()
 
     pygame.quit()

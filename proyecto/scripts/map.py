@@ -13,9 +13,11 @@ class GameMap:
     def generate_map(self):
         """
         Genera un mapa con bordes cerrados y obstáculos aleatorios.
+        Garantiza que el área inicial del jugador esté libre.
         0 = espacio libre
         1 = pared
         """
+
         grid = []
 
         for row in range(MAP_ROWS):
@@ -26,13 +28,18 @@ class GameMap:
                 if row == 0 or col == 0 or row == MAP_ROWS - 1 or col == MAP_COLS - 1:
                     current_row.append(1)
                 else:
-                    # Obstáculos aleatorios
-                    if random.random() < 0.2:
+                    # Reducimos probabilidad de pared
+                    if random.random() < 0.15:
                         current_row.append(1)
                     else:
                         current_row.append(0)
 
             grid.append(current_row)
+
+        # Asegurar zona libre alrededor del jugador (posición 1,1)
+        safe_zone = [(1,1), (1,2), (2,1), (2,2)]
+        for r, c in safe_zone:
+            grid[r][c] = 0
 
         return grid
 
