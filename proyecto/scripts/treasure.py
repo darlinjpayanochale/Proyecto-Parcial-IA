@@ -5,6 +5,7 @@ import pygame
 import random
 from scripts.settings import TILE_SIZE
 
+
 class Treasure:
     def __init__(self, game_map, player):
         self.game_map = game_map
@@ -12,30 +13,37 @@ class Treasure:
         self.position = self.generate_position()
 
     def generate_position(self):
-        while True:
-            x = random.randint(0, len(self.game_map.grid[0]) - 1)
-            y = random.randint(0, len(self.game_map.grid) - 1)
+        rows = len(self.game_map.grid)
+        cols = len(self.game_map.grid[0])
 
-            # Celda libre
-            if self.game_map.grid[y][x] == 0:
-                # No encima del jugador
-                if x != self.player.col or y != self.player.row:
-                    return (x, y)
+        # Evitamos la última fila si es muro
+        min_row = rows - 4
+        max_row = rows - 2
+
+        while True:
+            row = random.randint(min_row, max_row)
+            col = random.randint(1, cols - 2)  # evitamos bordes laterales
+
+            if (
+                self.game_map.grid[row][col] == 0 and
+                (row, col) != (self.player.row, self.player.col)
+            ):
+                return (row, col)
 
     def draw(self, screen):
+        # IMPORTANTE: col primero para X, row para Y
         rect = pygame.Rect(
-            self.position[0] * TILE_SIZE,
-            self.position[1] * TILE_SIZE,
+            self.position[1] * TILE_SIZE,  # X
+            self.position[0] * TILE_SIZE,  # Y
             TILE_SIZE,
             TILE_SIZE
         )
+
         if not self.player.has_treasure:
             pygame.draw.rect(screen, (255, 215, 0), rect)
 
     def check_collision(self):
-        treasure_col = self.position[0]
-        treasure_row = self.position[1]
-
-        if self.player.col == treasure_col and self.player.row == treasure_row:
-            return True
-        return False
+        return (
+            self.player.row == self.position[0] and
+            self.player.col == self.position[1]
+        )
