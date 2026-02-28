@@ -10,10 +10,14 @@ class Player:
         self.game_map = game_map
         self.move_delay = 150  # milisegundos entre movimientos
         self.last_move_time = 0
-
+        
         # Posición inicial (celda)
         self.row = 1
         self.col = 1
+        
+        self.start_row = self.row
+        self.start_col = self.col
+        self.has_treasure = False
 
         self.color = COLOR_PLAYER
 

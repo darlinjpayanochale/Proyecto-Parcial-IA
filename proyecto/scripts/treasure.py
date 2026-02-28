@@ -29,7 +29,8 @@ class Treasure:
             TILE_SIZE,
             TILE_SIZE
         )
-        pygame.draw.rect(screen, (255, 215, 0), rect)
+        if not self.player.has_treasure:
+            pygame.draw.rect(screen, (255, 215, 0), rect)
 
     def check_collision(self):
         treasure_col = self.position[0]
