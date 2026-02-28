@@ -7,6 +7,7 @@ from scripts.map import GameMap
 from scripts.settings import *
 from scripts.player import Player
 from scripts.treasure import Treasure
+from scripts.guardian import Guardian
 
 
 def main():
@@ -22,6 +23,11 @@ def main():
     player = Player(game_map)
     treasure = Treasure(game_map, player)
     message = ""
+    # Crear guardianes
+    patrol1 = [(5,5), (5,10), (10,10), (10,5)]
+    guardian1 = Guardian(game_map, player, patrol1)
+    guardians = [guardian1]
+
 
     clock = pygame.time.Clock()
     running = True
@@ -40,12 +46,14 @@ def main():
 
             if player.has_treasure:
                  if player.row == player.start_row and player.col == player.start_col:
-                      message = "¡Ganaste!"              
+                      message = "¡Ganaste! Escapaste con el tesoro."              
 
             # Permitir salir con ESC
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+
+              
 
         player.handle_input()
 
@@ -53,6 +61,10 @@ def main():
         game_map.draw(screen)
         treasure.draw(screen)
         player.draw(screen)
+
+        for guardian in guardians:
+            guardian.update()
+            guardian.draw(screen) 
 
         if message != "":
             text_surface = font.render(message, True, (255, 255, 255))
