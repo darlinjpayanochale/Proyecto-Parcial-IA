@@ -3,137 +3,118 @@
 
 import pygame
 from scripts.settings import TILE_SIZE
+from scripts.astar import astar
+
 
 class Guardian:
-    """
-    Guardian que patrulla, detecta al jugador y lo persigue.
-    Estados: patrol, chase, search
-    """
 
     def __init__(self, game_map, player, patrol_points):
         self.game_map = game_map
         self.player = player
-        self.patrol_points = patrol_points  # Lista de puntos de patrulla [(row, col), ...]
+        self.patrol_points = patrol_points
         self.current_patrol_index = 0
 
-        # Delay de movimiento
-        self.move_delay = 200  # milisegundos entre movimientos
+        self.normal_move_delay = 175
+        self.aggressive_move_delay = 160
+
         self.last_move_time = 0
 
-        # Posición inicial
         self.row, self.col = patrol_points[0]
 
-        # Estado y visión
-        self.state = "patrol"  # patrol, chase, search
-        self.vision_range = 8
-        self.last_seen_position = None
+        self.normal_vision_range = 8
+        self.aggressive_vision_range = 15
 
-        # Color visible
-        self.color = (255, 0, 0)  # rojo
+        self.color = (255, 0, 0)
 
     def detect_player(self):
-        """
-        Detecta al jugador si está en la misma fila o columna y dentro del rango de visión
-        """
-        if self.player.row == self.row and abs(self.player.col - self.col) <= self.vision_range:
-            return True
-        if self.player.col == self.col and abs(self.player.row - self.row) <= self.vision_range:
-            return True
+
+        # MODO AGRESIVO (cuando tiene el tesoro)
+        if self.player.has_treasure:
+            distance = abs(self.player.row - self.row) + abs(self.player.col - self.col)
+            return distance <= self.aggressive_vision_range
+
+        # MODO NORMAL (línea recta con paredes)
+        if self.player.row == self.row:
+            step = 1 if self.player.col > self.col else -1
+            for col in range(self.col + step, self.player.col, step):
+                if self.game_map.grid[self.row][col] != 0:
+                    return False
+            return abs(self.player.col - self.col) <= self.normal_vision_range
+
+        if self.player.col == self.col:
+            step = 1 if self.player.row > self.row else -1
+            for row in range(self.row + step, self.player.row, step):
+                if self.game_map.grid[row][self.col] != 0:
+                    return False
+            return abs(self.player.row - self.row) <= self.normal_vision_range
+
         return False
 
     def update(self):
-        """
-        Actualiza el comportamiento según el estado y controla el delay de movimiento
-        """
+
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_move_time < self.move_delay:
-            return  # aún no se mueve
 
-        # Ejecutar acción según estado
-        if self.state == "patrol":
-            self.patrol()
-            if self.detect_player():
-                self.state = "chase"
-                self.last_seen_position = (self.player.row, self.player.col)
-        elif self.state == "chase":
-            self.chase_player()
-        elif self.state == "search":
-            self.search_last_seen()
-
-        # Actualiza el tiempo después de moverse
-        self.last_move_time = current_time
-
-    def patrol(self):
-        """
-        Movimiento entre los puntos de patrulla
-        """
-        target_row, target_col = self.patrol_points[self.current_patrol_index]
-        if self.row < target_row:
-            self.row += 1
-        elif self.row > target_row:
-            self.row -= 1
-        elif self.col < target_col:
-            self.col += 1
-        elif self.col > target_col:
-            self.col -= 1
+        # Cambiar velocidad según modo
+        if self.player.has_treasure:
+            move_delay = self.aggressive_move_delay
         else:
-            # Llegó al punto de patrulla, siguiente
-            self.current_patrol_index = (self.current_patrol_index + 1) % len(self.patrol_points)
+            move_delay = self.normal_move_delay
 
-    def chase_player(self):
-        """
-        Movimiento simple hacia el jugador
-        """
-        if self.row < self.player.row:
-            self.row += 1
-        elif self.row > self.player.row:
-            self.row -= 1
-        elif self.col < self.player.col:
-            self.col += 1
-        elif self.col > self.player.col:
-            self.col -= 1
-
-        # Cambiar estado si pierde visión
-        if not self.detect_player():
-            self.state = "search"
-        else:
-            self.last_seen_position = (self.player.row, self.player.col)
-
-    def search_last_seen(self):
-        """
-        Ir a la última posición conocida del jugador
-        """
-        if self.last_seen_position is None:
-            self.state = "patrol"
+        if current_time - self.last_move_time < move_delay:
             return
 
-        target_row, target_col = self.last_seen_position
-        if self.row < target_row:
-            self.row += 1
-        elif self.row > target_row:
-            self.row -= 1
-        elif self.col < target_col:
-            self.col += 1
-        elif self.col > target_col:
-            self.col -= 1
-        else:
-            # Llegó y no encontró jugador
-            self.state = "patrol"
-            self.last_seen_position = None
-
-        # Si detecta al jugador nuevamente
         if self.detect_player():
-            self.state = "chase"
-            self.last_seen_position = (self.player.row, self.player.col)
+            target = (self.player.row, self.player.col)
+        else:
+            target = self.patrol_points[self.current_patrol_index]
+
+            if (self.row, self.col) == target:
+                self.current_patrol_index = (
+                    self.current_patrol_index + 1
+                ) % len(self.patrol_points)
+                target = self.patrol_points[self.current_patrol_index]
+
+        self.move_to(target)
+
+        self.last_move_time = current_time
+
+    def move_to(self, target):
+
+        path = astar(
+            self.game_map.grid,
+            (self.row, self.col),
+            target
+        )
+
+        if not path:
+            # No hay camino → volver a patrulla
+            target = self.patrol_points[self.current_patrol_index]
+
+            path = astar(
+                self.game_map.grid,
+                (self.row, self.col),
+                target
+            )
+
+            if not path:
+                return
+
+        next_step = path[0]
+
+        if self.game_map.grid[next_step[0]][next_step[1]] == 0:
+            self.row, self.col = next_step
 
     def draw(self, screen):
-        """
-        Dibuja el guardian en pantalla
-        """
+
         rect = pygame.Rect(
             self.col * TILE_SIZE,
             self.row * TILE_SIZE,
             TILE_SIZE,
             TILE_SIZE
         )
-        pygame.draw.rect(screen, self.color, rect)
+
+        # Cambiar color en modo agresivo
+        if self.player.has_treasure:
+            pygame.draw.rect(screen, (255, 100, 100), rect)
+        else:
+            pygame.draw.rect(screen, self.color, rect)
