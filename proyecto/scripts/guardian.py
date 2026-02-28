@@ -17,7 +17,7 @@ class Guardian:
         self.current_patrol_index = 0
 
         # Delay de movimiento
-        self.move_delay = 300  # milisegundos entre movimientos
+        self.move_delay = 200  # milisegundos entre movimientos
         self.last_move_time = 0
 
         # Posición inicial
@@ -25,7 +25,7 @@ class Guardian:
 
         # Estado y visión
         self.state = "patrol"  # patrol, chase, search
-        self.vision_range = 3
+        self.vision_range = 8
         self.last_seen_position = None
 
         # Color visible
