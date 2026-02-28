@@ -24,9 +24,11 @@ def main():
     treasure = Treasure(game_map, player)
     message = ""
     # Crear guardianes
-    patrol1 = [(5,5), (5,10), (10,10), (10,5)]
+    patrol1 = [(3,4), (3,8), (8,10), (8,7)] 
+    patrol2 = [(7,6), (7,10), (13,12), (13,9)]
     guardian1 = Guardian(game_map, player, patrol1)
-    guardians = [guardian1]
+    guardian2 = Guardian(game_map, player, patrol2)
+    guardians = [guardian1, guardian2]
 
 
     clock = pygame.time.Clock()
