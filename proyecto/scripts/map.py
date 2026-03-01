@@ -5,11 +5,6 @@ import random
 import pygame
 from scripts.settings import *
 
-import random
-import pygame
-from scripts.settings import *
-
-
 class GameMap:
     def __init__(self):
         self.grid = self.generate_map()
@@ -23,6 +18,7 @@ class GameMap:
         """
 
         grid = []
+        
 
         for row in range(MAP_ROWS):
             current_row = []
@@ -39,7 +35,7 @@ class GameMap:
                     current_row.append(1)
 
                 else:
-                    # Obstáculos aleatorios (8%)
+                    # Obstáculos aleatorios (15%)
                     if random.random() < 0.15:
                         current_row.append(1)
                     else:
@@ -59,7 +55,19 @@ class GameMap:
         for c in range(1, 5):
             grid[1][c] = 0
 
-        return grid  # ← AHORA está correctamente indentado
+                # -----------------------
+        # Muros verticales fijos al lado del spawn
+        # -----------------------
+
+        spawn_row = 1
+        spawn_col = 1
+
+        # Columna 3 (al lado derecho de la zona segura)
+        if spawn_col + 1 < MAP_COLS and spawn_row + 1 < MAP_ROWS:
+            grid[spawn_row][spawn_col + 1] = 1
+            grid[spawn_row + 1][spawn_col + 1] = 1    
+
+        return grid 
 
     def draw(self, screen):
         """
