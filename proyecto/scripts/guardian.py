@@ -13,6 +13,9 @@ class Guardian:
         self.player = player
         self.patrol_points = patrol_points
         self.current_patrol_index = 0
+        self.chasing = False
+        self.last_seen_time = 0
+        self.memory_duration = 1500  # milisegundos
 
         self.normal_move_delay = 175
         self.aggressive_move_delay = 160
@@ -21,7 +24,7 @@ class Guardian:
 
         self.row, self.col = patrol_points[0]
 
-        self.normal_vision_range = 8
+        self.normal_vision_range = 10
         self.aggressive_vision_range = 15
 
         self.color = (255, 0, 0)
@@ -33,28 +36,32 @@ class Guardian:
             distance = abs(self.player.row - self.row) + abs(self.player.col - self.col)
             return distance <= self.aggressive_vision_range
 
-        # MODO NORMAL (línea recta con paredes)
-        if self.player.row == self.row:
-            step = 1 if self.player.col > self.col else -1
-            for col in range(self.col + step, self.player.col, step):
-                if self.game_map.grid[self.row][col] != 0:
-                    return False
-            return abs(self.player.col - self.col) <= self.normal_vision_range
+        # MODO NORMAL (visión por distancia con chequeo simple de obstáculos)
 
-        if self.player.col == self.col:
-            step = 1 if self.player.row > self.row else -1
-            for row in range(self.row + step, self.player.row, step):
-                if self.game_map.grid[row][self.col] != 0:
-                    return False
-            return abs(self.player.row - self.row) <= self.normal_vision_range
+        distance = abs(self.player.row - self.row) + abs(self.player.col - self.col)
 
+        if distance <= self.normal_vision_range:
+
+            # Chequeo simple: intentar trazar línea aproximada
+            dr = self.player.row - self.row
+            dc = self.player.col - self.col
+
+            steps = max(abs(dr), abs(dc))
+
+            for i in range(1, steps):
+                r = self.row + (dr * i) // steps
+                c = self.col + (dc * i) // steps
+
+                if self.game_map.grid[r][c] != 0:
+                    return False
+
+            return True
         return False
 
     def update(self):
 
         current_time = pygame.time.get_ticks()
 
-        # Cambiar velocidad según modo
         if self.player.has_treasure:
             move_delay = self.aggressive_move_delay
         else:
@@ -63,11 +70,21 @@ class Guardian:
         if current_time - self.last_move_time < move_delay:
             return
 
+        # --- DECISIÓN DE OBJETIVO ---
+
         if self.detect_player():
             target = (self.player.row, self.player.col)
+
         else:
+            # Si estaba persiguiendo y te pierde, forzar cambio de patrulla
+            if (self.row, self.col) == self.patrol_points[self.current_patrol_index]:
+                self.current_patrol_index = (
+                    self.current_patrol_index + 1
+                ) % len(self.patrol_points)
+
             target = self.patrol_points[self.current_patrol_index]
 
+            # Si llegó al punto, cambiar al siguiente
             if (self.row, self.col) == target:
                 self.current_patrol_index = (
                     self.current_patrol_index + 1
@@ -87,17 +104,11 @@ class Guardian:
         )
 
         if not path:
-            # No hay camino → volver a patrulla
-            target = self.patrol_points[self.current_patrol_index]
-
-            path = astar(
-                self.game_map.grid,
-                (self.row, self.col),
-                target
-            )
-
-            if not path:
-                return
+            # Cambiar al siguiente punto de patrulla si no hay camino
+            self.current_patrol_index = (
+                self.current_patrol_index + 1
+            ) % len(self.patrol_points)
+            return
 
         next_step = path[0]
 
