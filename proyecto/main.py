@@ -40,26 +40,21 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                
-            if treasure.check_collision() and not player.has_treasure:
-                    player.has_treasure = True
-                    message = "Tesoro recogido ¡Regresa a la puerta!" 
-
-
-            if player.has_treasure:
-                 if player.row == player.start_row and player.col == player.start_col:
-                      message = "¡Ganaste! Escapaste con el tesoro."              
 
             # Permitir salir con ESC
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-              
-
         player.handle_input()
-
+        if treasure.check_collision() and not player.has_treasure:
+            player.has_treasure = True
+            message = "Tesoro recogido ¡Regresa a la puerta!" 
         
+        if player.has_treasure:
+            if player.row == player.start_row and player.col == player.start_col:
+                message = "¡Ganaste! Escapaste con el tesoro."              
+
         game_map.draw(screen)
         treasure.draw(screen)
         player.draw(screen)
@@ -77,7 +72,6 @@ def main():
 
     pygame.quit()
     sys.exit()
-
-
+    
 if __name__ == "__main__":
     main()

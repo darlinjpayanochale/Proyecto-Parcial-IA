@@ -36,7 +36,7 @@ class GameMap:
 
                 else:
                     # Obstáculos aleatorios (15%)
-                    if random.random() < 0.15:
+                    if random.random() < 0.10:
                         current_row.append(1)
                     else:
                         current_row.append(0)

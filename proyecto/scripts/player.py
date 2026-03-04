@@ -14,7 +14,7 @@ class Player:
         # Posición inicial (celda)
         self.row = 1
         self.col = 1
-        
+
         self.start_row = self.row
         self.start_col = self.col
         self.has_treasure = False
@@ -32,7 +32,7 @@ class Player:
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
 
-        # Evitar movimiento continuo demasiado rápido
+        # Evitar movimiento demasiado rápido
         if current_time - self.last_move_time < self.move_delay:
             return
 
@@ -50,18 +50,17 @@ class Player:
         else:
             return  # No se presionó nada
 
-        #Verificar colisión
+        # Verificar colisión
         if self.game_map.grid[new_row][new_col] == 0:
             self.row = new_row
             self.col = new_col
 
-            #Actualizar rect
+            # Actualizar rect
             self.rect.x = self.col * TILE_SIZE
             self.rect.y = self.row * TILE_SIZE
 
             self.last_move_time = current_time
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
-
         
+        pygame.draw.rect(screen, self.color, self.rect)

@@ -31,10 +31,10 @@ class Treasure:
                 return (row, col)
 
     def draw(self, screen):
-        # IMPORTANTE: col primero para X, row para Y
+
         rect = pygame.Rect(
-            self.position[1] * TILE_SIZE,  # X
-            self.position[0] * TILE_SIZE,  # Y
+            self.position[1] * TILE_SIZE,  
+            self.position[0] * TILE_SIZE,  
             TILE_SIZE,
             TILE_SIZE
         )
