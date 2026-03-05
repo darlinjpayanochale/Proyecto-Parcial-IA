@@ -36,62 +36,44 @@ class Guardian:
     # CONDICIONES
 
     def can_see_player(self):
-        max_distance = 7
 
-        dr = self.player.row - self.row
-        dc = self.player.col - self.col
+        max_distance = 10
 
-        distance = max(abs(dr), abs(dc))
+        dr = abs(self.player.row - self.row)
+        dc = abs(self.player.col - self.col)
 
-        if distance > max_distance:
+        if max(dr, dc) > max_distance:
             return False
 
-        steps = distance
+        # Intentar calcular camino
+        path = astar(
+            self.game_map.grid,
+            (self.row, self.col),
+            (self.player.row, self.player.col)
+        )
 
-        if steps == 0:
+        if path:
+            self.last_seen_position = (self.player.row, self.player.col)
             return True
-
-        step_row = dr / steps
-        step_col = dc / steps
-
-        current_row = self.row
-        current_col = self.col
-
-        for _ in range(steps):
-            current_row += step_row
-            current_col += step_col
-
-            grid_row = round(current_row)
-            grid_col = round(current_col)
-
-            if (grid_row, grid_col) == (self.player.row, self.player.col):
-                self.last_seen_position = (self.player.row, self.player.col)
-                return True
-
-            if self.game_map.grid[grid_row][grid_col] == 1:
-                return False
-
+        
         return False
 
     def has_last_seen_position(self):
         return self.last_seen_position is not None
-    
+
     # ACCIONES
-
-
+    
     def chase_player(self):
-        target = (self.player.row, self.player.col)
-        self.move_to(target)
+        self.current_target = (self.player.row, self.player.col)
 
     def go_to_last_seen(self):
         if (self.row, self.col) == self.last_seen_position:
             self.last_seen_position = None
-            return
-
-        self.move_to(self.last_seen_position)
+            self.current_target = None
+        else:
+            self.current_target = self.last_seen_position
 
     def patrol(self):
-
         if not self.patrol_points:
             return
 
@@ -116,7 +98,7 @@ class Guardian:
         if self.player.has_treasure:
             move_delay = 150   # agresivo (más rápido)
         else:
-            move_delay = 200   # normal
+            move_delay = 180   # normal
 
         if current_time - self.last_move_time < move_delay:
             return
@@ -138,8 +120,8 @@ class Guardian:
     def update(self):
         self.tree.run()
 
-        if self.current_target is not None:
-             self.move_to(self.current_target)
+        if hasattr(self, "current_target") and self.current_target is not None:
+            self.move_to(self.current_target)
 
 
     # DIBUJO

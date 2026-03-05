@@ -36,7 +36,7 @@ class GameMap:
 
                 else:
                     # Obstáculos aleatorios (15%)
-                    if random.random() < 0.10:
+                    if random.random() < 0.08:
                         current_row.append(1)
                     else:
                         current_row.append(0)
@@ -54,10 +54,8 @@ class GameMap:
 
         for c in range(1, 5):
             grid[1][c] = 0
-
-                # -----------------------
         # Muros verticales fijos al lado del spawn
-        # -----------------------
+
 
         spawn_row = 1
         spawn_col = 1

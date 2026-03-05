@@ -24,8 +24,8 @@ def main():
     treasure = Treasure(game_map, player)
     message = ""
     # Crear guardianes
-    patrol1 = [(5,9), (3,10), (3,18)]
-    patrol2 = [(7,6), (7,10), (13,12), (13,9)]
+    patrol1 = [(4,8), (4,10), (6,9)]
+    patrol2 = [(8,8), (8,12), (12,10)]
     guardian1 = Guardian(game_map, player, patrol1)
     guardian2 = Guardian(game_map, player, patrol2)
     guardians = [guardian1, guardian2]
@@ -72,6 +72,6 @@ def main():
 
     pygame.quit()
     sys.exit()
-    
+
 if __name__ == "__main__":
     main()
