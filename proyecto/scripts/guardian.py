@@ -18,13 +18,9 @@ class Guardian:
         self.row, self.col = patrol_points[0]
 
         self.last_seen_position = None
-
-        self.move_delay = 200
         self.last_move_time = 0
 
-        self.current_path = []
-
-        # ÁRBOL DE COMPORTAMIENTO 
+        # ÁRBOL DE COMPORTAMIENTO
         self.tree = Selector([
             Sequence([
                 Condition(self.can_see_player),
@@ -40,20 +36,49 @@ class Guardian:
     # CONDICIONES
 
     def can_see_player(self):
-        distance = abs(self.player.row - self.row) + abs(self.player.col - self.col)
+        max_distance = 7
 
-        if distance <= 8:
-            self.last_seen_position = (self.player.row, self.player.col)
+        dr = self.player.row - self.row
+        dc = self.player.col - self.col
+
+        distance = max(abs(dr), abs(dc))
+
+        if distance > max_distance:
+            return False
+
+        steps = distance
+
+        if steps == 0:
             return True
+
+        step_row = dr / steps
+        step_col = dc / steps
+
+        current_row = self.row
+        current_col = self.col
+
+        for _ in range(steps):
+            current_row += step_row
+            current_col += step_col
+
+            grid_row = round(current_row)
+            grid_col = round(current_col)
+
+            if (grid_row, grid_col) == (self.player.row, self.player.col):
+                self.last_seen_position = (self.player.row, self.player.col)
+                return True
+
+            if self.game_map.grid[grid_row][grid_col] == 1:
+                return False
 
         return False
 
     def has_last_seen_position(self):
         return self.last_seen_position is not None
-
-
+    
     # ACCIONES
-   
+
+
     def chase_player(self):
         target = (self.player.row, self.player.col)
         self.move_to(target)
@@ -66,6 +91,10 @@ class Guardian:
         self.move_to(self.last_seen_position)
 
     def patrol(self):
+
+        if not self.patrol_points:
+            return
+
         target = self.patrol_points[self.current_patrol_index]
 
         if (self.row, self.col) == target:
@@ -75,14 +104,21 @@ class Guardian:
 
             target = self.patrol_points[self.current_patrol_index]
 
-        self.move_to(target)
+        self.current_target = target
 
     # MOVIMIENTO CON A*
 
     def move_to(self, target):
 
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_move_time < self.move_delay:
+
+        # Velocidad dinámica
+        if self.player.has_treasure:
+            move_delay = 150   # agresivo (más rápido)
+        else:
+            move_delay = 200   # normal
+
+        if current_time - self.last_move_time < move_delay:
             return
 
         path = astar(
@@ -97,13 +133,17 @@ class Guardian:
 
         self.last_move_time = current_time
 
-
-
     # UPDATE
+
     def update(self):
         self.tree.run()
 
+        if self.current_target is not None:
+             self.move_to(self.current_target)
+
+
     # DIBUJO
+
     def draw(self, screen):
         rect = pygame.Rect(
             self.col * TILE_SIZE,
@@ -111,4 +151,11 @@ class Guardian:
             TILE_SIZE,
             TILE_SIZE
         )
-        pygame.draw.rect(screen, (255, 0, 0), rect)
+
+        # Blanco cuando está agresivo
+        if self.player.has_treasure:
+            color = (255, 255, 255)  # blanco
+        else:
+            color = (255, 0, 0)      # rojo normal
+
+        pygame.draw.rect(screen, color, rect)
