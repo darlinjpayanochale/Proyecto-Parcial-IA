@@ -22,7 +22,7 @@ class Treasure:
 
         while True:
             row = random.randint(min_row, max_row)
-            col = random.randint(1, cols - 2)  # evitamos bordes laterales
+            col = random.randint(1, cols - 2)
 
             if (
                 self.game_map.grid[row][col] == 0 and
@@ -30,11 +30,13 @@ class Treasure:
             ):
                 return (row, col)
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x, offset_y):
+
+        row, col = self.position
 
         rect = pygame.Rect(
-            self.position[1] * TILE_SIZE,  
-            self.position[0] * TILE_SIZE,  
+            col * TILE_SIZE + offset_x,
+            row * TILE_SIZE + offset_y,
             TILE_SIZE,
             TILE_SIZE
         )
@@ -43,7 +45,10 @@ class Treasure:
             pygame.draw.rect(screen, (255, 215, 0), rect)
 
     def check_collision(self):
+
+        row, col = self.position
+
         return (
-            self.player.row == self.position[0] and
-            self.player.col == self.position[1]
+            self.player.row == row and
+            self.player.col == col
         )

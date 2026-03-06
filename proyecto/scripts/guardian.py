@@ -96,9 +96,9 @@ class Guardian:
 
         # Velocidad dinámica
         if self.player.has_treasure:
-            move_delay = 150   # agresivo (más rápido)
+            move_delay = 120   # agresivo (más rápido)
         else:
-            move_delay = 180   # normal
+            move_delay = 200   # normal
 
         if current_time - self.last_move_time < move_delay:
             return
@@ -126,13 +126,13 @@ class Guardian:
 
     # DIBUJO
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x, offset_y):
         rect = pygame.Rect(
-            self.col * TILE_SIZE,
-            self.row * TILE_SIZE,
-            TILE_SIZE,
-            TILE_SIZE
-        )
+        self.col * TILE_SIZE + offset_x,
+        self.row * TILE_SIZE + offset_y,
+        TILE_SIZE,
+        TILE_SIZE
+    )
 
         # Blanco cuando está agresivo
         if self.player.has_treasure:

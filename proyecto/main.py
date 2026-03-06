@@ -18,6 +18,9 @@ def main():
 
     # Configurar pantalla completa
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    screen_width, screen_height = screen.get_size()
+    offset_x = (screen_width - MAP_WIDTH) // 2
+    offset_y = (screen_height - MAP_HEIGHT) // 2
     pygame.display.set_caption("El Guardián del Tesoro")
     game_map = GameMap()
     player = Player(game_map)
@@ -36,6 +39,7 @@ def main():
 
     while running:
         clock.tick(60)  # 60 FPS
+        screen.fill((0,0,0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,13 +59,13 @@ def main():
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡Ganaste! Escapaste con el tesoro."              
 
-        game_map.draw(screen)
-        treasure.draw(screen)
-        player.draw(screen)
+        game_map.draw(screen, offset_x, offset_y)
+        treasure.draw(screen, offset_x, offset_y)
+        player.draw(screen, offset_x, offset_y)
 
         for guardian in guardians:
             guardian.update()
-            guardian.draw(screen) 
+            guardian.draw(screen, offset_x, offset_y)
 
         if message != "":
             text_surface = font.render(message, True, (255, 255, 255))

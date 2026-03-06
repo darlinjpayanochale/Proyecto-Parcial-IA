@@ -67,7 +67,7 @@ class GameMap:
 
         return grid 
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x, offset_y):
         """
         Dibuja el mapa en pantalla.
         """
@@ -76,11 +76,11 @@ class GameMap:
             for col in range(MAP_COLS):
 
                 rect = pygame.Rect(
-                    col * TILE_SIZE,
-                    row * TILE_SIZE,
-                    TILE_SIZE,
-                    TILE_SIZE
-                )
+                offset_x + col * TILE_SIZE,
+                offset_y + row * TILE_SIZE,
+                TILE_SIZE,
+                TILE_SIZE
+            )
 
                 if self.grid[row][col] == 1:
                     pygame.draw.rect(screen, COLOR_WALL, rect)

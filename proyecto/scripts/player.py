@@ -20,14 +20,7 @@ class Player:
         self.has_treasure = False
 
         self.color = COLOR_PLAYER
-
-        self.rect = pygame.Rect(
-            self.col * TILE_SIZE,
-            self.row * TILE_SIZE,
-            TILE_SIZE,
-            TILE_SIZE
-        )
-
+        
     def handle_input(self):
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
@@ -55,12 +48,14 @@ class Player:
             self.row = new_row
             self.col = new_col
 
-            # Actualizar rect
-            self.rect.x = self.col * TILE_SIZE
-            self.rect.y = self.row * TILE_SIZE
-
             self.last_move_time = current_time
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x, offset_y):
+        rect = pygame.Rect(
+            self.col * TILE_SIZE + offset_x,
+            self.row * TILE_SIZE + offset_y,
+            TILE_SIZE,
+            TILE_SIZE
+        )
         
-        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(screen, self.color, rect)
