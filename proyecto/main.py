@@ -49,7 +49,9 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-
+        info = font.render("Encuentra el tesoro y regresa al inicio", True, (200,200,200))
+        info_rect = info.get_rect(center=(screen_width // 2, 70))
+        screen.blit(info, info_rect)
         player.handle_input()
         if treasure.check_collision() and not player.has_treasure:
             player.has_treasure = True
@@ -69,7 +71,8 @@ def main():
 
         if message != "":
             text_surface = font.render(message, True, (255, 255, 255))
-            screen.blit(text_surface, (20, 20))
+            text_rect = text_surface.get_rect(center=(screen_width // 2, 40))
+            screen.blit(text_surface, text_rect)
 
         pygame.display.flip()
 
