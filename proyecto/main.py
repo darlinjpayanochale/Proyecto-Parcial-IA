@@ -73,15 +73,16 @@ def main():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
-        player.handle_input()
+        if not game_over:
+            player.handle_input()
 
         # TESORO
-        if treasure.check_collision() and not player.has_treasure:
+        if not game_over and treasure.check_collision() and not player.has_treasure:
             player.has_treasure = True
             message = "Tesoro recogido ¡Regresa!"
 
         # GANAR
-        if player.has_treasure:
+        if not game_over and player.has_treasure:
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
                 game_over = True
@@ -94,11 +95,13 @@ def main():
         # GUARDIANES
         for guardian in guardians:
 
-            if guardian.row == player.row and guardian.col == player.col:
-                message = "GAME OVER"
-                game_over = True
+            if not game_over:
+                if guardian.row == player.row and guardian.col == player.col:
+                    message = "GAME OVER"
+                    game_over = True
 
-            guardian.update()
+                guardian.update()
+
             guardian.draw(screen, offset_x, offset_y)
 
         # MENSAJE SUPERIOR 
