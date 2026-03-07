@@ -14,6 +14,12 @@ def main():
 
     pygame.init()
 
+    pygame.mixer.init()
+
+    sound_treasure = pygame.mixer.Sound("assets/sounds/treasure.wav")
+    sound_caught = pygame.mixer.Sound("assets/sounds/caught.wav")
+    sound_win = pygame.mixer.Sound("assets/sounds/win.wav")
+
     font = pygame.font.SysFont(None, 36)
     big_font = pygame.font.SysFont(None, 90)
 
@@ -80,12 +86,14 @@ def main():
         if not game_over and treasure.check_collision() and not player.has_treasure:
             player.has_treasure = True
             message = "Tesoro recogido ¡Regresa!"
+            sound_treasure.play()
 
         # GANAR
         if not game_over and player.has_treasure:
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
                 game_over = True
+                sound_win.play()
 
         # DIBUJAR MAPA
         game_map.draw(screen, offset_x, offset_y)
@@ -99,6 +107,7 @@ def main():
                 if guardian.row == player.row and guardian.col == player.col:
                     message = "GAME OVER"
                     game_over = True
+                    sound_caught.play()
 
                 guardian.update()
 
