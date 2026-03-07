@@ -54,14 +54,24 @@ def main():
 
         for event in pygame.event.get():
 
+            if event.type == pygame.QUIT:
+                running = False
+
             if event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_ESCAPE:
-                    running = False
+                # CONTROLES CUANDO EL JUEGO TERMINA
+                if game_over:
 
-            if game_over:
-                if event.key == pygame.K_r:
-                    main()  # reinicia el juego
+                    if event.key == pygame.K_r:
+                        main()   # reinicia el juego
+
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+
+                # CONTROLES NORMALES DEL JUEGO
+                else:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
 
         player.handle_input()
 
@@ -122,7 +132,7 @@ def main():
             restart_rect = restart_text.get_rect(center=(screen_width // 2, screen_height // 2 + 80))
             screen.blit(restart_text, restart_rect)
         pygame.display.flip()
-        
+
     pygame.quit()
     sys.exit()
 
