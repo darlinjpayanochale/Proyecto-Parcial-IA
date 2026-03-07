@@ -12,6 +12,10 @@ class Treasure:
         self.player = player
         self.position = self.generate_position()
 
+        # Cargar sprite del tesoro
+        self.image = pygame.image.load("assets/sprites/treasure.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (TILE_SIZE, TILE_SIZE))
+
     def generate_position(self):
         rows = len(self.game_map.grid)
         cols = len(self.game_map.grid[0])
@@ -34,15 +38,12 @@ class Treasure:
 
         row, col = self.position
 
-        rect = pygame.Rect(
-            col * TILE_SIZE + offset_x,
-            row * TILE_SIZE + offset_y,
-            TILE_SIZE,
-            TILE_SIZE
-        )
+        x = col * TILE_SIZE + offset_x
+        y = row * TILE_SIZE + offset_y
 
+        # Solo dibujar si el jugador aún no lo tiene
         if not self.player.has_treasure:
-            pygame.draw.rect(screen, (255, 215, 0), rect)
+            screen.blit(self.image, (x, y))
 
     def check_collision(self):
 
