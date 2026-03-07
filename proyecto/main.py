@@ -54,12 +54,14 @@ def main():
 
         for event in pygame.event.get():
 
-            if event.type == pygame.QUIT:
-                running = False
-
             if event.type == pygame.KEYDOWN:
+
                 if event.key == pygame.K_ESCAPE:
                     running = False
+
+            if game_over:
+                if event.key == pygame.K_r:
+                    main()  # reinicia el juego
 
         player.handle_input()
 
@@ -116,13 +118,11 @@ def main():
 
             screen.blit(text_surface, text_rect)
 
+            restart_text = font.render("Presiona R para jugar otra vez o ESC para salir.", True, (255,255,255))
+            restart_rect = restart_text.get_rect(center=(screen_width // 2, screen_height // 2 + 80))
+            screen.blit(restart_text, restart_rect)
         pygame.display.flip()
-
-        # TERMINAR JUEGO
-        if game_over:
-            pygame.time.delay(3000)
-            running = False
-
+        
     pygame.quit()
     sys.exit()
 
