@@ -37,26 +37,29 @@ class Guardian:
 
     def can_see_player(self):
 
-        max_distance = 10
+        max_distance = 6
 
-        dr = abs(self.player.row - self.row)
-        dc = abs(self.player.col - self.col)
+        dr = self.player.row - self.row
+        dc = self.player.col - self.col
 
-        if max(dr, dc) > max_distance:
+        distance = (dr**2 + dc**2) ** 0.5
+
+        if distance > max_distance:
             return False
 
-        # Intentar calcular camino
-        path = astar(
-            self.game_map.grid,
-            (self.row, self.col),
-            (self.player.row, self.player.col)
-        )
+        steps = int(max(abs(dr), abs(dc)))
 
-        if path:
-            self.last_seen_position = (self.player.row, self.player.col)
-            return True
-        
-        return False
+        for i in range(1, steps):
+            r = int(self.row + dr * i / steps)
+            c = int(self.col + dc * i / steps)
+
+            if self.game_map.grid[r][c] == 1:
+                return False
+
+        # SOLO guardar posición si realmente lo vemos ahora
+        self.last_seen_position = (self.player.row, self.player.col)
+
+        return True
 
     def has_last_seen_position(self):
         return self.last_seen_position is not None
@@ -93,12 +96,11 @@ class Guardian:
     def move_to(self, target):
 
         current_time = pygame.time.get_ticks()
-
-        # Velocidad dinámica
+        
         if self.player.has_treasure:
-            move_delay = 120   # agresivo (más rápido)
+            move_delay = 150
         else:
-            move_delay = 200   # normal
+            move_delay = 200
 
         if current_time - self.last_move_time < move_delay:
             return
@@ -109,9 +111,12 @@ class Guardian:
             target
         )
 
-        if path:
+        if path and len(path) > 0:
             next_step = path[0]
             self.row, self.col = next_step
+        else:
+            # si no hay camino, volver a patrullar
+            self.current_target = None
 
         self.last_move_time = current_time
 

@@ -12,14 +12,13 @@ class GameMap:
     def generate_map(self):
         """
         Genera un mapa con bordes cerrados y obstáculos aleatorios.
-        Garantiza que el área inicial del jugador esté libre.
+
         0 = espacio libre
         1 = pared
         """
 
         grid = []
         
-
         for row in range(MAP_ROWS):
             current_row = []
 
@@ -35,37 +34,55 @@ class GameMap:
                     current_row.append(1)
 
                 else:
-                    # Obstáculos aleatorios (15%)
-                    if random.random() < 0.08:
+                    # Obstáculos aleatorios
+                    if random.random() < 0.2:
                         current_row.append(1)
                     else:
                         current_row.append(0)
 
             grid.append(current_row)
 
-        # Zona segura del jugador (arriba izquierda)
+        # ZONA SEGURA DEL JUGADOR
         safe_zone = [(1,1), (1,2), (2,1), (2,2)]
+
         for r, c in safe_zone:
             grid[r][c] = 0
 
-        # Salida garantizada hacia el centro
+        # salida hacia el mapa
         for r in range(1, 5):
             grid[r][1] = 0
 
         for c in range(1, 5):
             grid[1][c] = 0
-        # Muros verticales fijos al lado del spawn
 
+        # PUNTOS DE PATRULLA
+        patrol_points = [
+            (4,8), (4,10), (6,9),
+            (8,8), (8,12), (12,10)
+        ]
 
-        spawn_row = 1
-        spawn_col = 1
+        for r, c in patrol_points:
 
-        # Columna 3 (al lado derecho de la zona segura)
-        if spawn_col + 1 < MAP_COLS and spawn_row + 1 < MAP_ROWS:
-            grid[spawn_row][spawn_col + 1] = 1
-            grid[spawn_row + 1][spawn_col + 1] = 1    
+            if r < MAP_ROWS and c < MAP_COLS:
 
-        return grid 
+                # asegurar que el punto esté libre
+                grid[r][c] = 0
+
+                # limpiar alrededor para evitar bloqueos
+                for dr in [-1,0,1]:
+                    for dc in [-1,0,1]:
+
+                        rr = r + dr
+                        cc = c + dc
+
+                        if (
+                            0 <= rr < MAP_ROWS and
+                            0 <= cc < MAP_COLS
+                        ):
+                            grid[rr][cc] = 0
+
+        return grid
+
 
     def draw(self, screen, offset_x, offset_y):
         """
@@ -76,11 +93,11 @@ class GameMap:
             for col in range(MAP_COLS):
 
                 rect = pygame.Rect(
-                offset_x + col * TILE_SIZE,
-                offset_y + row * TILE_SIZE,
-                TILE_SIZE,
-                TILE_SIZE
-            )
+                    offset_x + col * TILE_SIZE,
+                    offset_y + row * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE
+                )
 
                 if self.grid[row][col] == 1:
                     pygame.draw.rect(screen, COLOR_WALL, rect)
