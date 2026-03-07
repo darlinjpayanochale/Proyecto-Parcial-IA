@@ -10,6 +10,22 @@ from scripts.treasure import Treasure
 from scripts.guardian import Guardian
 from scripts.menu import show_menu
 
+def start_new_game():
+
+    game_map = GameMap()
+    player = Player(game_map)
+    treasure = Treasure(game_map, player)
+
+    patrol1 = [(4,8), (4,10), (6,9)]
+    patrol2 = [(8,8), (8,12), (12,10)]
+
+    guardian1 = Guardian(game_map, player, patrol1)
+    guardian2 = Guardian(game_map, player, patrol2)
+
+    guardians = [guardian1, guardian2]
+
+    return game_map, player, treasure, guardians
+
 def main():
 
     pygame.init()
@@ -28,24 +44,20 @@ def main():
     pygame.display.set_caption("El Guardián del Tesoro")
 
     screen_width, screen_height = screen.get_size()
+    # Mostrar menú primero
     show_menu(screen, screen_width, screen_height)
+
+    # Cambiar a música de juego
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("assets/music/game_music.mp3")
+    pygame.mixer.music.play(-1)  # Repite la música del juego
+    pygame.mixer.music.set_volume(0.5)  
+
     # Centrar mapa
     offset_x = (screen_width - MAP_WIDTH) // 2
     offset_y = (screen_height - MAP_HEIGHT) // 2
 
-    game_map = GameMap()
-    player = Player(game_map)
-    treasure = Treasure(game_map, player)
-
-    # Guardianes
-    patrol1 = [(4,8), (4,10), (6,9)]
-    patrol2 = [(8,8), (8,12), (12,10)]
-
-    guardian1 = Guardian(game_map, player, patrol1)
-    guardian2 = Guardian(game_map, player, patrol2)
-
-    guardians = [guardian1, guardian2]
-
+    game_map, player, treasure, guardians = start_new_game()
     
     message = ""
     game_over = False
@@ -68,11 +80,19 @@ def main():
                 # CONTROLES CUANDO EL JUEGO TERMINA
                 if game_over:
 
-                    if event.key == pygame.K_r:
-                        main()   # reinicia el juego
+                        if event.key == pygame.K_r:
 
-                    if event.key == pygame.K_ESCAPE:
-                        running = False
+                            game_map, player, treasure, guardians = start_new_game()
+
+                            message = ""
+                            game_over = False
+
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+
+                        # Reiniciar música del juego
+                        pygame.mixer.music.load("assets/music/game_music.mp3")
+                        pygame.mixer.music.play(-1)
 
                 # CONTROLES NORMALES DEL JUEGO
                 else:
@@ -93,6 +113,7 @@ def main():
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
                 game_over = True
+                pygame.mixer.music.stop()
                 sound_win.play()
 
         # DIBUJAR MAPA
@@ -107,6 +128,7 @@ def main():
                 if guardian.row == player.row and guardian.col == player.col:
                     message = "GAME OVER"
                     game_over = True
+                    pygame.mixer.music.stop()
                     sound_caught.play()
 
                 guardian.update()
