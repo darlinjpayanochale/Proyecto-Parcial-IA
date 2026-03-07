@@ -8,7 +8,7 @@ from scripts.settings import *
 from scripts.player import Player
 from scripts.treasure import Treasure
 from scripts.guardian import Guardian
-
+from scripts.menu import show_menu
 
 def main():
 
@@ -22,7 +22,7 @@ def main():
     pygame.display.set_caption("El Guardián del Tesoro")
 
     screen_width, screen_height = screen.get_size()
-
+    show_menu(screen, screen_width, screen_height)
     # Centrar mapa
     offset_x = (screen_width - MAP_WIDTH) // 2
     offset_y = (screen_height - MAP_HEIGHT) // 2
