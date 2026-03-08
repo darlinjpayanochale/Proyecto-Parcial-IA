@@ -36,7 +36,7 @@ def main():
     sound_caught = pygame.mixer.Sound("assets/sounds/caught.wav")
     sound_win = pygame.mixer.Sound("assets/sounds/win.wav")
 
-    font = pygame.font.SysFont(None, 36)
+    font = pygame.font.SysFont(None, 44)
     big_font = pygame.font.SysFont(None, 90)
 
     # Pantalla completa
@@ -44,6 +44,12 @@ def main():
     pygame.display.set_caption("El Guardián del Tesoro")
 
     screen_width, screen_height = screen.get_size()
+    background = pygame.image.load("assets/backgrounds/dungeon.jpg").convert()
+    background = pygame.transform.scale(background, (screen_width, screen_height))
+    overlay = pygame.Surface((screen_width, screen_height))
+    overlay.set_alpha(200)   
+    overlay.fill((0,0,0))
+        
     # Mostrar menú primero
     show_menu(screen, screen_width, screen_height)
 
@@ -67,7 +73,8 @@ def main():
     while running:
 
         clock.tick(60)
-        screen.fill((0,0,0))
+        screen.blit(background, (0,0))
+        screen.blit(overlay,(0,0))
 
         for event in pygame.event.get():
 
@@ -161,7 +168,7 @@ def main():
             else:
                 info = font.render("Tesoro recogido ¡Regresa!", True, (255,215,0))
 
-            info_rect = info.get_rect(center=(screen_width // 2, 70))
+            info_rect = info.get_rect(center=(screen_width // 2, 30))
             screen.blit(info, info_rect)
 
         # MENSAJE GRANDE SOLO PARA GANAR O PERDER
