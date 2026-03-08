@@ -3,6 +3,7 @@
 
 import pygame
 import random
+import math
 from scripts.settings import TILE_SIZE
 
 
@@ -43,6 +44,23 @@ class Treasure:
 
         # Solo dibujar si el jugador aún no lo tiene
         if not self.player.has_treasure:
+
+            # brillo pulsante
+            t = pygame.time.get_ticks() * 0.005
+            radius = int(TILE_SIZE * 0.6 + math.sin(t) * 6)
+
+            glow_surface = pygame.Surface((TILE_SIZE * 2, TILE_SIZE * 2), pygame.SRCALPHA)
+
+            pygame.draw.circle(
+                glow_surface,
+                (255, 215, 0, 80),  # dorado transparente
+                (TILE_SIZE, TILE_SIZE),
+                radius
+            )
+
+            screen.blit(glow_surface, (x - TILE_SIZE//2, y - TILE_SIZE//2))
+
+            # sprite del tesoro
             screen.blit(self.image, (x, y))
 
     def check_collision(self):

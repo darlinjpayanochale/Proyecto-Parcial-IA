@@ -81,6 +81,9 @@ def main():
 
                         if event.key == pygame.K_r:
 
+                            sound_win.stop()
+                            sound_caught.stop()
+
                             game_map, player, treasure, guardians = start_new_game()
 
                             message = ""
@@ -99,8 +102,23 @@ def main():
                     if event.key == pygame.K_ESCAPE:
                         running = False
 
+                    if event.key == pygame.K_m:
+
+                        pygame.mixer.music.stop()
+
+                        show_menu(screen, screen_width, screen_height)
+
+                        pygame.mixer.music.load("assets/music/game_music.mp3")
+                        pygame.mixer.music.play(-1, fade_ms=1500)
+                        pygame.mixer.music.set_volume(0.5)
+
+                        game_map, player, treasure, guardians = start_new_game()
+
+                        message = ""
+                        game_over = False
+                    
         if not game_over:
-            player.handle_input()
+                        player.handle_input()
 
         # TESORO
         if not game_over and treasure.check_collision() and not player.has_treasure:
