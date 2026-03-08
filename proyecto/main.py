@@ -48,9 +48,8 @@ def main():
     show_menu(screen, screen_width, screen_height)
 
     # Cambiar a música de juego
-    pygame.mixer.music.stop()
     pygame.mixer.music.load("assets/music/game_music.mp3")
-    pygame.mixer.music.play(-1)  # Repite la música del juego
+    pygame.mixer.music.play(-1, fade_ms=1500)  # Repite la música del juego
     pygame.mixer.music.set_volume(0.5)  
 
     # Centrar mapa
@@ -89,7 +88,8 @@ def main():
 
                              # Reiniciar música del juego
                             pygame.mixer.music.load("assets/music/game_music.mp3")
-                            pygame.mixer.music.play(-1)
+                            pygame.mixer.music.play(-1, fade_ms=1500)
+                            pygame.mixer.music.set_volume(0.5)
 
                         if event.key == pygame.K_ESCAPE:
                             running = False
@@ -113,7 +113,7 @@ def main():
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
                 game_over = True
-                pygame.mixer.music.stop()
+                pygame.mixer.music.fadeout(1500)
                 sound_win.play()
 
         # DIBUJAR MAPA
@@ -128,7 +128,7 @@ def main():
                 if guardian.row == player.row and guardian.col == player.col:
                     message = "GAME OVER"
                     game_over = True
-                    pygame.mixer.music.stop()
+                    pygame.mixer.music.fadeout(1500)
                     sound_caught.play()
 
                 guardian.update()
@@ -148,6 +148,11 @@ def main():
 
         # MENSAJE GRANDE SOLO PARA GANAR O PERDER
         if message == "GAME OVER" or message == "¡GANASTE!":
+
+            overlay = pygame.Surface((screen_width, screen_height))
+            overlay.set_alpha(150)
+            overlay.fill((0,0,0))
+            screen.blit(overlay,(0,0))
 
             if message == "GAME OVER":
                 color = (255,0,0)
