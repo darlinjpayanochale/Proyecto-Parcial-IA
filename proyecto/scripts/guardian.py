@@ -10,6 +10,38 @@ from scripts.behavior_tree import Selector, Sequence, Condition, Action
 class Guardian:
 
     def __init__(self, game_map, player, patrol_points):
+
+        self.animations = {
+            "down": [],
+            "up": [],
+            "left": [],
+            "right": []
+        }
+
+        for i in range(1,7):
+            img = pygame.image.load(f"assets/sprites/guardian/down{i}.png").convert_alpha()
+            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            self.animations["down"].append(img)
+
+        for i in range(1,7):
+            img = pygame.image.load(f"assets/sprites/guardian/up{i}.png").convert_alpha()
+            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            self.animations["up"].append(img)
+
+        for i in range(1,7):
+            img = pygame.image.load(f"assets/sprites/guardian/left{i}.png").convert_alpha()
+            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            self.animations["left"].append(img)
+
+        for i in range(1,7):
+            img = pygame.image.load(f"assets/sprites/guardian/right{i}.png").convert_alpha()
+            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            self.animations["right"].append(img)
+
+        self.direction = "down"
+        self.frame_index = 0
+        self.animation_speed = 0.2
+
         self.game_map = game_map
         self.player = player
         self.patrol_points = patrol_points
@@ -112,8 +144,22 @@ class Guardian:
         )
 
         if path and len(path) > 0:
-            next_step = path[0]
-            self.row, self.col = next_step
+            next_row, next_col = path[0]
+
+            # calcular dirección
+            dr = next_row - self.row
+            dc = next_col - self.col
+
+            if dr > 0:
+                self.direction = "down"
+            elif dr < 0:
+                self.direction = "up"
+            elif dc > 0:
+                self.direction = "right"
+            elif dc < 0:
+                self.direction = "left"
+
+            self.row, self.col = next_row, next_col
         else:
             # si no hay camino, volver a patrullar
             self.current_target = None
@@ -123,21 +169,30 @@ class Guardian:
     # UPDATE
 
     def update(self):
+
+        # ejecutar árbol de comportamiento
         self.tree.run()
 
-        if hasattr(self, "current_target") and self.current_target is not None:
+        # moverse si hay objetivo
+        if hasattr(self, "current_target") and self.current_target:
             self.move_to(self.current_target)
+
+        self.frame_index += self.animation_speed
+
+        if self.frame_index >= len(self.animations[self.direction]):
+            self.frame_index = 0
 
 
     # DIBUJO
 
     def draw(self, screen, offset_x, offset_y):
-        rect = pygame.Rect(
-        self.col * TILE_SIZE + offset_x,
-        self.row * TILE_SIZE + offset_y,
-        TILE_SIZE,
-        TILE_SIZE
-    )
+
+        sprite = self.animations[self.direction][int(self.frame_index)]
+
+        x = self.col * TILE_SIZE + offset_x
+        y = self.row * TILE_SIZE + offset_y
+
+        screen.blit(sprite,(x,y))
 
         # Blanco cuando está agresivo
         if self.player.has_treasure:
@@ -145,4 +200,4 @@ class Guardian:
         else:
             color = (255, 0, 0)      # rojo normal
 
-        pygame.draw.rect(screen, color, rect)
+        
