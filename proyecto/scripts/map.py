@@ -10,12 +10,27 @@ class GameMap:
         self.grid = self.generate_map()
 
         # Cargar sprites
-        self.floor_img = pygame.image.load("assets/sprites/floor.png").convert_alpha()
-        self.wall_img = pygame.image.load("assets/sprites/wall.png").convert_alpha()
+        self.floor_img = pygame.image.load("assets/sprites/floor.png").convert()
+        self.wall_img = pygame.image.load("assets/sprites/wall.png").convert()
 
         # Escalar al tamaño de las celdas
         self.floor_sprite = pygame.transform.scale(self.floor_img, (TILE_SIZE, TILE_SIZE))
         self.wall_sprite = pygame.transform.scale(self.wall_img, (TILE_SIZE, TILE_SIZE))
+
+        # Crear superficie del mapa completo
+        self.map_surface = pygame.Surface((MAP_COLS * TILE_SIZE, MAP_ROWS * TILE_SIZE))
+
+        # Dibujar el mapa una sola vez en esa superficie
+        for row in range(MAP_ROWS):
+            for col in range(MAP_COLS):
+
+                x = col * TILE_SIZE
+                y = row * TILE_SIZE
+
+                if self.grid[row][col] == 1:
+                    self.map_surface.blit(self.wall_sprite, (x, y))
+                else:
+                    self.map_surface.blit(self.floor_sprite, (x, y))
 
     def generate_map(self):
         """
@@ -42,7 +57,7 @@ class GameMap:
 
                 else:
                     # Obstáculos aleatorios
-                    if random.random() < 0.1:
+                    if random.random() < 0.10:
                         current_row.append(1)
                     else:
                         current_row.append(0)
@@ -71,23 +86,13 @@ class GameMap:
                 # Limpiar alrededor para evitar bloqueos
                 for dr in [-1,0,1]:
                     for dc in [-1,0,1]:
+                        
                         rr = r + dr
                         cc = c + dc
                         if 0 <= rr < MAP_ROWS and 0 <= cc < MAP_COLS:
                             grid[rr][cc] = 0
 
         return grid
-
+    
     def draw(self, screen, offset_x, offset_y):
-        """
-        Dibuja el mapa en pantalla usando sprites.
-        """
-        for row in range(MAP_ROWS):
-            for col in range(MAP_COLS):
-                x = offset_x + col * TILE_SIZE
-                y = offset_y + row * TILE_SIZE
-
-                if self.grid[row][col] == 1:
-                    screen.blit(self.wall_sprite, (x, y))
-                else:
-                    screen.blit(self.floor_sprite, (x, y))
+        screen.blit(self.map_surface, (offset_x, offset_y))

@@ -4,7 +4,7 @@
 import pygame
 
 def show_menu(screen, screen_width, screen_height):
-    background = pygame.image.load("assets/images/menu_background.jpg")
+    background = pygame.image.load("assets/images/menu_background.jpg").convert()
     background = pygame.transform.scale(background, (screen_width, screen_height))
     
     # Iniciar música del menú

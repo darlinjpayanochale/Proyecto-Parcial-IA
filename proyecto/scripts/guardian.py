@@ -11,6 +11,7 @@ class Guardian:
 
     def __init__(self, game_map, player, patrol_points):
 
+
         self.animations = {
             "down": [],
             "up": [],
@@ -41,6 +42,8 @@ class Guardian:
         self.direction = "down"
         self.frame_index = 0
         self.animation_speed = 0.2
+
+        self.cached_path = []
 
         self.game_map = game_map
         self.player = player
@@ -137,14 +140,15 @@ class Guardian:
         if current_time - self.last_move_time < move_delay:
             return
 
-        path = astar(
-            self.game_map.grid,
-            (self.row, self.col),
-            target
-        )
+        if not self.cached_path:
+            self.cached_path = astar(
+                self.game_map.grid,
+                (self.row, self.col),
+                target
+            )
 
-        if path and len(path) > 0:
-            next_row, next_col = path[0]
+        if self.cached_path:
+            next_row, next_col = self.cached_path.pop(0)
 
             # calcular dirección
             dr = next_row - self.row
