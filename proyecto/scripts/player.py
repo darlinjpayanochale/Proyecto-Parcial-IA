@@ -17,22 +17,22 @@ class Player:
 
         for i in range(1, 7):
             img = pygame.image.load(f"assets/sprites/player/down{i}.png").convert_alpha()
-            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["down"].append(img)
 
         for i in range(1, 7):
             img = pygame.image.load(f"assets/sprites/player/up{i}.png").convert_alpha()
-            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["up"].append(img)
 
         for i in range(1, 7):
             img = pygame.image.load(f"assets/sprites/player/left{i}.png").convert_alpha()
-            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["left"].append(img)
 
         for i in range(1, 7):
             img = pygame.image.load(f"assets/sprites/player/right{i}.png").convert_alpha()
-            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["right"].append(img)
         
         self.direction = "down"

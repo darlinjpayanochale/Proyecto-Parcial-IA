@@ -20,22 +20,22 @@ class Guardian:
 
         for i in range(1,7):
             img = pygame.image.load(f"assets/sprites/guardian/down{i}.png").convert_alpha()
-            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["down"].append(img)
 
         for i in range(1,7):
             img = pygame.image.load(f"assets/sprites/guardian/up{i}.png").convert_alpha()
-            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["up"].append(img)
 
         for i in range(1,7):
             img = pygame.image.load(f"assets/sprites/guardian/left{i}.png").convert_alpha()
-            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["left"].append(img)
 
         for i in range(1,7):
             img = pygame.image.load(f"assets/sprites/guardian/right{i}.png").convert_alpha()
-            img = pygame.transform.scale(img,(TILE_SIZE,TILE_SIZE))
+            img = pygame.transform.scale(img,(int(TILE_SIZE*1.2), int(TILE_SIZE*1.2)))
             self.animations["right"].append(img)
 
         self.direction = "down"
@@ -192,7 +192,8 @@ class Guardian:
         x = self.col * TILE_SIZE + offset_x
         y = self.row * TILE_SIZE + offset_y
 
-        screen.blit(sprite,(x,y))
+        screen.blit(sprite,(x - TILE_SIZE*0.1, y - TILE_SIZE*0.1))
+
 
         # Blanco cuando está agresivo
         if self.player.has_treasure:
