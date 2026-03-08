@@ -87,12 +87,12 @@ def main():
                             message = ""
                             game_over = False
 
+                             # Reiniciar música del juego
+                            pygame.mixer.music.load("assets/music/game_music.mp3")
+                            pygame.mixer.music.play(-1)
+
                         if event.key == pygame.K_ESCAPE:
                             running = False
-
-                        # Reiniciar música del juego
-                        pygame.mixer.music.load("assets/music/game_music.mp3")
-                        pygame.mixer.music.play(-1)
 
                 # CONTROLES NORMALES DEL JUEGO
                 else:

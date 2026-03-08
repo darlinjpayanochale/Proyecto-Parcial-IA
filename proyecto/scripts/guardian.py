@@ -193,12 +193,4 @@ class Guardian:
         y = self.row * TILE_SIZE + offset_y
 
         screen.blit(sprite,(x - TILE_SIZE*0.1, y - TILE_SIZE*0.1))
-
-
-        # Blanco cuando está agresivo
-        if self.player.has_treasure:
-            color = (255, 255, 255)  # blanco
-        else:
-            color = (255, 0, 0)      # rojo normal
-
         
