@@ -113,7 +113,7 @@ def main():
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
                 game_over = True
-                pygame.mixer.music.fadeout(1500)
+                pygame.mixer.music.stop()
                 sound_win.play()
 
         # DIBUJAR MAPA
@@ -128,7 +128,7 @@ def main():
                 if guardian.row == player.row and guardian.col == player.col:
                     message = "GAME OVER"
                     game_over = True
-                    pygame.mixer.music.fadeout(1500)
+                    pygame.mixer.music.stop()
                     sound_caught.play()
 
                 guardian.update()

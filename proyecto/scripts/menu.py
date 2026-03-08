@@ -4,6 +4,9 @@
 import pygame
 
 def show_menu(screen, screen_width, screen_height):
+    background = pygame.image.load("assets/images/menu_background.jpg")
+    background = pygame.transform.scale(background, (screen_width, screen_height))
+    
     # Iniciar música del menú
     pygame.mixer.music.load("assets/music/menu_music.mp3")
     pygame.mixer.music.play(-1)  # -1 hace que se repita infinitamente
@@ -16,6 +19,12 @@ def show_menu(screen, screen_width, screen_height):
     while waiting:
 
         screen.fill((0, 0, 0))
+
+        screen.blit(background, (0,0))
+        overlay = pygame.Surface((screen_width, screen_height))
+        overlay.set_alpha(150)
+        overlay.fill((0,0,0))
+        screen.blit(overlay,(0,0))
 
         title = big_font.render("EL GUARDIÁN DEL TESORO", True, (255,215,0))
         start = font.render("Presiona ENTER para jugar", True, (255,255,255))
