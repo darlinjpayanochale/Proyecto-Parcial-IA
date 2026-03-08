@@ -7,6 +7,37 @@ from scripts.settings import *
 
 class Player:
     def __init__(self, game_map):
+
+        self.animations = {
+            "down": [],
+            "up": [],
+            "left": [],
+            "right": []
+        }
+
+        for i in range(1, 7):
+            img = pygame.image.load(f"assets/sprites/player/down{i}.png").convert_alpha()
+            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            self.animations["down"].append(img)
+
+        for i in range(1, 7):
+            img = pygame.image.load(f"assets/sprites/player/up{i}.png").convert_alpha()
+            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            self.animations["up"].append(img)
+
+        for i in range(1, 7):
+            img = pygame.image.load(f"assets/sprites/player/left{i}.png").convert_alpha()
+            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            self.animations["left"].append(img)
+
+        for i in range(1, 7):
+            img = pygame.image.load(f"assets/sprites/player/right{i}.png").convert_alpha()
+            img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+            self.animations["right"].append(img)
+        
+        self.direction = "down"
+        self.frame_index = 0
+
         self.game_map = game_map
         self.move_delay = 150  # milisegundos entre movimientos
         self.last_move_time = 0
@@ -34,12 +65,20 @@ class Player:
 
         if keys[pygame.K_w]:
             new_row -= 1
+            self.direction = "up"
+
         elif keys[pygame.K_s]:
             new_row += 1
+            self.direction = "down"
+
         elif keys[pygame.K_a]:
             new_col -= 1
+            self.direction = "left"
+
         elif keys[pygame.K_d]:
             new_col += 1
+            self.direction = "right"
+
         else:
             return  # No se presionó nada
 
@@ -50,6 +89,11 @@ class Player:
 
             self.last_move_time = current_time
 
+            self.frame_index += 1
+
+            if self.frame_index >= len(self.animations[self.direction]):
+                self.frame_index = 0
+
     def draw(self, screen, offset_x, offset_y):
         rect = pygame.Rect(
             self.col * TILE_SIZE + offset_x,
@@ -58,4 +102,6 @@ class Player:
             TILE_SIZE
         )
         
-        pygame.draw.rect(screen, self.color, rect)
+        sprite = self.animations[self.direction][self.frame_index]
+
+        screen.blit(sprite, (rect.x, rect.y))
