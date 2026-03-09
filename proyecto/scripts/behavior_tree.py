@@ -1,3 +1,8 @@
+# Nombre: Darlin Javier Payano Chale
+# Matrícula: 21-MISN-2-034
+
+#Clase base para los nodos del árbol de comportamiento.
+#Todos los tipos denodos heredan de esta clase.
 class Node:
     def run(self):
         raise NotImplementedError

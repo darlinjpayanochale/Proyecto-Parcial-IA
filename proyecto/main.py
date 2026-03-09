@@ -10,6 +10,10 @@ from scripts.treasure import Treasure
 from scripts.guardian import Guardian
 from scripts.menu import show_menu
 
+
+"""Esta función se encarga de crear todos los elementos necesarios
+cada vez que empieza una partida nueva o se reinicia el juego.
+Aquí se generan el mapa, el jugador, el tesoro y los guardianes."""
 def start_new_game():
 
     game_map = GameMap()
@@ -32,10 +36,15 @@ def main():
 
     pygame.mixer.init()
 
+    #Cargar los efectos de sonido del juego
+    #Cada uno se reproduce en momentos específicos.
     sound_treasure = pygame.mixer.Sound("assets/sounds/treasure.wav")
     sound_caught = pygame.mixer.Sound("assets/sounds/caught.wav")
     sound_win = pygame.mixer.Sound("assets/sounds/win.wav")
+    
 
+    #Fuentes que se usarán para mostrar textos en pantalla
+    #font se usa para mensajes normales y big_font para mensajes importantes
     font = pygame.font.SysFont(None, 44)
     big_font = pygame.font.SysFont(None, 90)
 
@@ -44,8 +53,14 @@ def main():
     pygame.display.set_caption("El Guardián del Tesoro")
 
     screen_width, screen_height = screen.get_size()
+    
+    #Fonde del juego que se muestra detrás del mapa.
+    #Se escala al tamaño de la pantalla para cubrir rodo el fondo.
     background = pygame.image.load("assets/backgrounds/dungeon.jpg").convert()
     background = pygame.transform.scale(background, (screen_width, screen_height))
+    
+    #Capa oscura transparente que se coloca encima del fondo
+    #para que el mapa del juego resalte más visualmente.
     overlay = pygame.Surface((screen_width, screen_height))
     overlay.set_alpha(200)   
     overlay.fill((0,0,0))
@@ -70,6 +85,8 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
+    #Bucle principal del juego.
+    #Aquí se actualiza la lógica, se procesan eventos y se dibuja todo en pantalla. 
     while running:
 
         clock.tick(60)
@@ -83,7 +100,7 @@ def main():
 
             if event.type == pygame.KEYDOWN:
 
-                # CONTROLES CUANDO EL JUEGO TERMINA
+                #Controles cuando el juego termina
                 if game_over:
 
                         if event.key == pygame.K_r:
@@ -99,12 +116,12 @@ def main():
                              # Reiniciar música del juego
                             pygame.mixer.music.load("assets/music/game_music.mp3")
                             pygame.mixer.music.play(-1, fade_ms=1500)
-                            pygame.mixer.music.set_volume(0.5)
+                            pygame.mixer.music.set_volume(0.3)
 
                         if event.key == pygame.K_ESCAPE:
                             running = False
 
-                # CONTROLES NORMALES DEL JUEGO
+                #Controles normales del juego
                 else:
                     if event.key == pygame.K_ESCAPE:
                         running = False
@@ -117,7 +134,7 @@ def main():
 
                         pygame.mixer.music.load("assets/music/game_music.mp3")
                         pygame.mixer.music.play(-1, fade_ms=1500)
-                        pygame.mixer.music.set_volume(0.5)
+                        pygame.mixer.music.set_volume(0.3)
 
                         game_map, player, treasure, guardians = start_new_game()
 
@@ -127,13 +144,15 @@ def main():
         if not game_over:
                         player.handle_input()
 
-        # TESORO
+        #Verifica si el jugador llegó a la posición del tesoro
+        #Si lo recoge, se activa el estado de "tesoro obtenido"
         if not game_over and treasure.check_collision() and not player.has_treasure:
             player.has_treasure = True
             message = "Tesoro recogido ¡Regresa!"
             sound_treasure.play()
 
-        # GANAR
+        #Si el jugador tiene el tesoro y vuelve a la posición inicial,
+        #eljuego se considera ganado.
         if not game_over and player.has_treasure:
             if player.row == player.start_row and player.col == player.start_col:
                 message = "¡GANASTE!"
@@ -141,12 +160,13 @@ def main():
                 pygame.mixer.music.stop()
                 sound_win.play()
 
-        # DIBUJAR MAPA
+        #Dibujar mapa
         game_map.draw(screen, offset_x, offset_y)
         treasure.draw(screen, offset_x, offset_y)
         player.draw(screen, offset_x, offset_y)
 
-        # GUARDIANES
+        #Actualizar el comportamiento de los guardianes.
+        #También se verifica si alguno atrapa añ jugador.
         for guardian in guardians:
 
             if not game_over:
@@ -160,7 +180,7 @@ def main():
 
             guardian.draw(screen, offset_x, offset_y)
 
-        # MENSAJE SUPERIOR 
+        #Mensaje superior 
         if not game_over:
 
             if not player.has_treasure:
@@ -171,7 +191,16 @@ def main():
             info_rect = info.get_rect(center=(screen_width // 2, 30))
             screen.blit(info, info_rect)
 
-        # MENSAJE GRANDE SOLO PARA GANAR O PERDER
+            hint = font.render("Moverse = ASWD", True, (200,200,200))
+            screen.blit(hint, (20, 20))
+
+            hint = font.render("ESC = Salir", True, (200,200,200))
+            screen.blit(hint, (20, 80))
+
+            hint = font.render("M = Menu", True, (200,200,200))
+            screen.blit(hint, (20, 140))
+
+        #Mensaje grande solo para ganar o perder
         if message == "GAME OVER" or message == "¡GANASTE!":
 
             overlay = pygame.Surface((screen_width, screen_height))

@@ -55,7 +55,9 @@ class Guardian:
         self.last_seen_position = None
         self.last_move_time = 0
 
-        # ÁRBOL DE COMPORTAMIENTO
+        #Árbol de comportamiento del guardián.
+        #Decide qué acción tomar: perseguir al jugador, ir a la última posición
+        #donde lo vio o continuar patrullando.
         self.tree = Selector([
             Sequence([
                 Condition(self.can_see_player),
@@ -133,9 +135,9 @@ class Guardian:
         current_time = pygame.time.get_ticks()
         
         if self.player.has_treasure:
-            move_delay = 150
+            move_delay = 130
         else:
-            move_delay = 200
+            move_delay = 190
 
         if current_time - self.last_move_time < move_delay:
             return

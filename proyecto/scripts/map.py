@@ -64,7 +64,7 @@ class GameMap:
 
             grid.append(current_row)
 
-        # ZONA SEGURA DEL JUGADOR
+        #Zona segura del jugador
         safe_zone = [(1,1), (1,2), (2,1), (2,2)]
         for r, c in safe_zone:
             grid[r][c] = 0
@@ -75,7 +75,7 @@ class GameMap:
         for c in range(1, 5):
             grid[1][c] = 0
 
-        # PUNTOS DE PATRULLA
+        #Puntos de patrulla
         patrol_points = [
             (4,8), (4,10), (6,9),
             (8,8), (8,12), (12,10)

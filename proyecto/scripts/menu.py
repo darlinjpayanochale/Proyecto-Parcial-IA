@@ -10,6 +10,7 @@ def show_menu(screen, screen_width, screen_height):
     # Iniciar música del menú
     pygame.mixer.music.load("assets/music/menu_music.mp3")
     pygame.mixer.music.play(-1)  # -1 hace que se repita infinitamente
+    pygame.mixer.music.set_volume(0.5)
 
     font = pygame.font.SysFont(None, 50)
     big_font = pygame.font.SysFont(None, 100)

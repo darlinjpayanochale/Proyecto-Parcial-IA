@@ -51,7 +51,10 @@ class Player:
         self.has_treasure = False
 
         self.color = COLOR_PLAYER
-        
+
+    #Maneja el movimiento del jugador según las teclas presionadas.
+    #También controla la dirección del sprite y evita que el jugador
+    # se mueva demasiado rápido entre celdas.    
     def handle_input(self):
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
@@ -94,6 +97,9 @@ class Player:
             if self.frame_index >= len(self.animations[self.direction]):
                 self.frame_index = 0
 
+
+    #Dibuja el sprite del jugador en pantalla según su posición
+    #actual dentro del mapa.
     def draw(self, screen, offset_x, offset_y):
         rect = pygame.Rect(
             self.col * TILE_SIZE + offset_x,
